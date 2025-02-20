@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Interaktif</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Animasi Scroll */
+        .hidden-section {
+            opacity: 0;
+            transition: all 0.8s ease-out;
+        }
+
+        .fade-in {
+            opacity: 1;
+        }
+
+        .slide-left {
+            transform: translateX(-50px);
+        }
+
+        .slide-right {
+            transform: translateX(50px);
+        }
+
+        .slide-up {
+            transform: translateY(50px);
+        }
+
+        .slide-down {
+            transform: translateY(-50px);
+        }
+
+        .visible {
+            transform: translateX(0) translateY(0);
+            opacity: 1;
+        }
+
+        /* Gradient Bergerak */
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Material You Black & White */
+        .animated-bg {
+            background: linear-gradient(180deg, #8094d0, #ffffff);
+            color: #aeaeae;
+        }
+        /* Efek Hover Ikon */
+        .hover-icon {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .hover-icon:hover {
+            transform: scale(1.2);
+        }
+
+        /* Efek Ketik */
+        .typing-effect::after {
+            content: "|";
+            display: inline-block;
+            animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* Foto Profil */
+        .profile-img {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.4s ease;
+        }
+
+        .profile-img:hover {
+            transform: scale(1.1);
+        }
+
+        /* Garis Pemisah */
+        .line {
+        height: 4px;
+        background: linear-gradient(to right, #0000001c, #0000001d);
+        width: 40%;
+        position: absolute;
+        top: 50%;
+        opacity: 0;
+    }
+
+    .left-line {
+        left: 0;
+        transform: translateX(-100%);
+        animation: moveLineLeft 1.5s ease-out forwards;
+    }
+
+    .right-line {
+        right: 0;
+        transform: translateX(100%);
+        animation: moveLineRight 1.5s ease-out forwards;
+    }
+
+    .dot {
+        width: 10px;
+        height: 10px;
+        background: #000000;
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0;
+        animation: fadeInDot 1.5s ease-out forwards 1.2s;
+    }
+
+    @keyframes moveLineLeft {
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes moveLineRight {
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeInDot {
+        to {
+            opacity: 1;
+        }
+    }
+
+    /* Gradient Text */
+    .gradient-text {
+        background: linear-gradient(90deg, #3cbbac, #6a7f92);
+        background-size: 200%;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradientMove 3s linear infinite;
+    }
+
+    </style>
+    </head>
+    <body class="animated-bg text-black">
+
+   <!-- Header -->
+    <header class="glass fixed top-0 left-0 w-full py-5 px-8 z-50 flex justify-between items-center shadow-md backdrop-blur-lg bg-opacity-80">
+    <!-- Kiri: Logo dan Efek Ketik -->
+    <div class="flex items-center space-x-3">
+        <i class="fas fa-code text-3xl text-blue-500"></i> <!-- Ikon -->
+        <h1 class="text-3xl font-bold">
+            <span id="header-typing"></span><span class="text-blue-500" id="cursor">|</span>
+        </h1>
+    </div>
+
+    <!-- Kanan: Tombol Hamburger -->
+    <button id="menu-btn" class="text-3xl focus:outline-none relative w-10 h-10 flex flex-col justify-between">
+        <span class="bg-white w-8 h-1 rounded transition-all duration-300 origin-center"></span>
+        <span class="bg-white w-8 h-1 rounded transition-all duration-300"></span>
+        <span class="bg-white w-8 h-1 rounded transition-all duration-300 origin-center"></span>
+    </button>
+    </header>
+
+    <!-- Overlay -->
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-0 hidden transition-opacity duration-300 z-40 backdrop-blur-md"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed top-0 right-0 bg-white bg-opacity-10 backdrop-blur-lg text-white h-full w-64 transform translate-x-full transition-transform duration-300 shadow-lg z-50 p-6 rounded-l-lg">
+        <button id="close-btn" class="absolute top-4 right-4 text-white text-3xl focus:outline-none">
+            <i class="fas fa-times"></i>
+        </button>
+        <ul class="mt-12 space-y-6 text-lg">
+            <li><a href="#about" class="flex items-center space-x-2 hover:text-gray-300 menu-item"><i class="fas fa-user"></i><span>Tentang</span></a></li>
+            <li><a href="#skills" class="flex items-center space-x-2 hover:text-gray-300 menu-item"><i class="fas fa-tools"></i><span>Keahlian</span></a></li>
+            <li><a href="#projects" class="flex items-center space-x-2 hover:text-gray-300 menu-item"><i class="fas fa-briefcase"></i><span>Projek</span></a></li>
+            <li><a href="#contact" class="flex items-center space-x-2 hover:text-gray-300 menu-item"><i class="fas fa-envelope"></i><span>Kontak</span></a></li>
+        </ul>
+    </aside>
+    <!-- Tombol Scroll Ke Atas -->
+    <button id="scroll-top-btn" class="fixed bottom-3 right-3 p-8 rounded-full bg-white/10 border border-white/20 backdrop-blur-md shadow-lg transition-all duration-300 opacity-0 hover:bg-white/20 hover:scale-110 flex items-center justify-center">
+        ▲
+    </button>
+
+    <!-- Hero Section -->
+    <section class="h-screen flex flex-col items-center justify-center text-center px-6 relative">
+        <img src="https://raw.githubusercontent.com/ajiesukma23/Photo/f300f3c7feef7459d37aa07c14c147f85b02129b/1695110837823.jpg"
+            alt="Foto Profil" class="profile-img hidden-section slide-up">
+        <h2 class="text-6xl font-bold mt-6 hidden-section slide-left">Halo, Saya <br><span class="gradient-text">M.Aji Sukma</span></h2><br>
+        <p class="text-lg max-w-xl hidden-section slide-right" id="hero-typing"></p>
+    </section>
+
+    <!-- Garis Pemisah dengan Animasi -->
+    <div class="relative w-full flex items-center justify-center my-16">
+        <div class="line left-line"></div>
+        <div class="dot"></div>
+        <div class="line right-line"></div>
+    </div>
+
+    <!-- Tentang Saya -->
+    <section id="about" class="container mx-auto px-6 py-32 text-center hidden-section slide-down">
+        <div class="glass p-10">
+            <h2 class="text-3xl font-semibold">Tentang Saya</h2>
+            <p class="mt-4">Saya memiliki pengalaman dalam pengembangan web, UI/UX, dan membangun aplikasi dengan teknologi modern Lorem ipsum dolor sit amet consectetur, adipisicing elit. Eum nostrum tempora perspiciatis eveniet repudiandae earum voluptate ipsam voluptates accusamus! Assumenda ullam voluptas, nesciunt ut unde velit dolores sequi qui ea..</p>
+        </div>
+    </section>
+
+
+    <!-- Biodata -->
+    <section class="py-20 bg-gray-100 dark:bg-gray-800 text-black dark:text-white text-center hidden-section slide-up">
+        <h2 class="text-3xl font-semibold">Biodata</h2>
+        <p class="mt-4">Nama: Nama Anda</p>
+        <p>Email: email@example.com</p>
+        <p>Telepon: +62 812-3456-7890</p>
+        <p>Alamat: Jakarta, Indonesia</p>
+    </section>
+
+    <!-- Keahlian -->
+    <section id="skills" class="py-20 text-center hidden-section slide-down">
+        <h2 class="text-3xl font-semibold">Keahlian</h2>
+        <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-6">
+            <a href="https://www.w3schools.com/html/" target="_blank" class="glass p-6 flex flex-col items-center">
+                <i class="fab fa-html5 text-4xl text-orange-500 hover-icon"></i>
+                <p class="mt-2">HTML</p>
+            </a>
+            <a href="https://www.w3schools.com/css/" target="_blank" class="glass p-6 flex flex-col items-center">
+                <i class="fab fa-css3-alt text-4xl text-blue-500 hover-icon"></i>
+                <p class="mt-2">CSS</p>
+            </a>
+        </div>
+    </section>
+
+    <!-- projek -->
+    <section id="projects" class="py-20 text-center hidden-section slide-up">
+        <h2 class="text-3xl font-semibold">Projek</h2>
+        <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-6">
+            <a href="https://github.com/ajiesukma23" target="_blank" class="glass p-6 flex flex-col items-center">
+                <i class="fas fa-code text-4xl text-green-500 hover-icon"></i>
+                <p class="mt-2">GitHub</p>
+            </a>
+        </div>
+    </section>
+
+    <!-- Kontak -->
+    <section id="contact" class="py-20 bg-gray-800 text-white text-center">
+        <h2 class="text-3xl font-semibold">Kontak</h2>
+        <div class="mt-6 flex justify-center space-x-6">
+            <a href="#" class="hover:text-gray-300 hover-icon"><i class="fas fa-envelope text-2xl"></i></a>
+            <a href="#" class="hover:text-gray-300 hover-icon"><i class="fas fa-phone text-2xl"></i></a>
+        </div>
+    </section>
+
+    <script>
+        // Animasi Scroll
+document.addEventListener("DOMContentLoaded", () => {
+    const sections = document.querySelectorAll(".hidden-section");
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("visible");
+            } else {
+                entry.target.classList.remove("visible");
+            }
+        });
+    }, { threshold: 0.2 });
+
+    sections.forEach(section => observer.observe(section));
+});
+
+// Efek Ketik
+function typeEffect(elementId, text, speed, cursorId) {
+    let index = 0;
+    function typing() {
+        if (index < text.length) {
+            document.getElementById(elementId).innerHTML += text.charAt(index);
+            index++;
+            setTimeout(typing, speed);
+        }
+    }
+    typing();
+
+    // Efek kursor tetap berkedip
+    setInterval(() => {
+        document.getElementById(cursorId).classList.toggle("opacity-0");
+    }, 500);
+}
+
+// Efek ketik di Header dan Hero Section
+window.onload = function() {
+    typeEffect("header-typing", "M.Aji Sukma", 100, "cursor");
+    setTimeout(() => typeEffect("hero-typing", "Saya seorang pengembang web yang menyukai desain modern, animasi interaktif, dan tampilan minimalis.", 30, "cursor-hero"), 1500);
+};
+
+    // Sidebar Animasi & Overlay
+    const menuBtn = document.getElementById("menu-btn");
+    const closeBtn = document.getElementById("close-btn");
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+    const menuItems = document.querySelectorAll(".menu-item");
+
+    // Fungsi untuk buka sidebar
+    menuBtn.addEventListener("click", () => {
+    sidebar.classList.remove("translate-x-full");
+    overlay.classList.remove("hidden");
+    setTimeout(() => overlay.classList.add("bg-opacity-50"), 10);
+
+    // Animasi hamburger menjadi "X"
+    menuBtn.children[0].classList.add("rotate-45", "translate-y-2");
+    menuBtn.children[1].classList.add("opacity-0");
+    menuBtn.children[2].classList.add("-rotate-45", "-translate-y-2");
+    });
+
+    // Fungsi untuk tutup sidebar
+    function closeSidebar() {
+    sidebar.classList.add("translate-x-full");
+    overlay.classList.remove("bg-opacity-50");
+    setTimeout(() => overlay.classList.add("hidden"), 300);
+
+    // Kembalikan hamburger ke semula
+    menuBtn.children[0].classList.remove("rotate-45", "translate-y-2");
+    menuBtn.children[1].classList.remove("opacity-0");
+    menuBtn.children[2].classList.remove("-rotate-45", "-translate-y-2");
+    }
+
+    // Tutup sidebar saat klik overlay atau menu
+    overlay.addEventListener("click", closeSidebar);
+    closeBtn.addEventListener("click", closeSidebar);
+    menuItems.forEach(item => item.addEventListener("click", closeSidebar));
+        
+    // Tombol Scroll Ke Atas
+    const scrollTopBtn = document.getElementById("scroll-top-btn");
+
+    // Tampilkan tombol saat scroll ke bawah
+    window.addEventListener("scroll", () => {
+        if (window.scrollY > 300) {
+            scrollTopBtn.classList.remove("opacity-0");
+        } else {
+            scrollTopBtn.classList.add("opacity-0");
+        }
+    });
+
+    // Scroll ke atas saat tombol diklik
+    scrollTopBtn.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    </script>
+
+</body>
+</html>
