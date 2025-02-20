@@ -169,17 +169,17 @@
     <body class="animated-bg text-black">
 
    <!-- Header -->
-    <header class="glass fixed top-0 left-0 w-full py-5 px-8 z-50 flex justify-between items-center shadow-md backdrop-blur-lg bg-opacity-80">
+    <header class="glass fixed top-0 left-0 w-full py-8 px-10 z-50 flex justify-between items-center shadow-md backdrop-blur-lg bg-opacity-80">
     <!-- Kiri: Logo dan Efek Ketik -->
     <div class="flex items-center space-x-3">
-        <i class="fas fa-code text-3xl text-blue-500"></i> <!-- Ikon -->
-        <h1 class="text-3xl font-bold">
+        <i class="fas fa-code text-5xl text-blue-500"></i> <!-- Ikon -->
+        <h1 class="text-5xl font-bold">
             <span id="header-typing"></span><span class="text-blue-500" id="cursor">|</span>
         </h1>
     </div>
 
     <!-- Kanan: Tombol Hamburger -->
-    <button id="menu-btn" class="text-3xl focus:outline-none relative w-10 h-10 flex flex-col justify-between">
+    <button id="menu-btn" class="text-6xl focus:outline-none relative w- h-10 flex flex-col justify-between">
         <span class="bg-white w-8 h-1 rounded transition-all duration-300 origin-center"></span>
         <span class="bg-white w-8 h-1 rounded transition-all duration-300"></span>
         <span class="bg-white w-8 h-1 rounded transition-all duration-300 origin-center"></span>
@@ -227,7 +227,7 @@
 
 
     <!-- Biodata -->
-    <section class="py-20 bg-gray-100 dark:bg-gray-800 text-black dark:text-white text-center hidden-section slide-up">
+    <section class="py-20 bg-gray-100 top-0 left-0 w-full dark:bg-gray-800 text-black dark:text-white text-center hidden-section slide-up">
         <h2 class="text-3xl font-semibold">Biodata</h2>
         <p class="mt-4">Nama: Nama Anda</p>
         <p>Email: email@example.com</p>
@@ -307,7 +307,7 @@
 
     // Efek ketik di Header dan Hero Section
     window.onload = function() {
-        typeEffect("header-typing", "M.Aji Sukma", 100, "cursor");
+        typeEffect("header-typing", "ajie.zip", 100, "cursor");
         setTimeout(() => typeEffect("hero-typing", "Saya seorang pengembang web yang menyukai desain modern, animasi interaktif, dan tampilan minimalis.", 30, "cursor-hero"), 1500);
     };
 
