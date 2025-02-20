@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ajie Bio</title>
+    <title>CV Interaktif</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -201,10 +201,6 @@
             <li><a href="#contact" class="flex items-center space-x-2 hover:text-gray-300 menu-item"><i class="fas fa-envelope"></i><span>Kontak</span></a></li>
         </ul>
     </aside>
-    <!-- Tombol Scroll Ke Atas -->
-    <button id="scroll-top-btn" class="fixed bottom-3 right-3 p-3 rounded-full bg-white/10 border border-white/20 backdrop-blur-md shadow-lg transition-all duration-300 opacity-0 hover:bg-white/20 hover:scale-100 flex items-center justify-center">
-        ▲
-    </button>
 
     <!-- Hero Section -->
     <section class="h-screen flex flex-col items-center justify-center text-center px-6 relative">
@@ -276,23 +272,23 @@
 
     <script>
         // Animasi Scroll
-document.addEventListener("DOMContentLoaded", () => {
-    const sections = document.querySelectorAll(".hidden-section");
-    const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add("visible");
-            } else {
-                entry.target.classList.remove("visible");
-            }
-        });
-    }, { threshold: 0.2 });
+    document.addEventListener("DOMContentLoaded", () => {
+        const sections = document.querySelectorAll(".hidden-section");
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("visible");
+                } else {
+                    entry.target.classList.remove("visible");
+                }
+            });
+        }, { threshold: 0.2 });
 
-    sections.forEach(section => observer.observe(section));
-});
+        sections.forEach(section => observer.observe(section));
+    });
 
-// Efek Ketik
-function typeEffect(elementId, text, speed, cursorId) {
+    // Efek Ketik
+    function typeEffect(elementId, text, speed, cursorId) {
     let index = 0;
     function typing() {
         if (index < text.length) {
@@ -307,13 +303,13 @@ function typeEffect(elementId, text, speed, cursorId) {
     setInterval(() => {
         document.getElementById(cursorId).classList.toggle("opacity-0");
     }, 500);
-}
+    }
 
-// Efek ketik di Header dan Hero Section
-window.onload = function() {
-    typeEffect("header-typing", "M.Aji Sukma", 100, "cursor");
-    setTimeout(() => typeEffect("hero-typing", "Saya seorang pengembang web yang menyukai desain modern, animasi interaktif, dan tampilan minimalis.", 30, "cursor-hero"), 1500);
-};
+    // Efek ketik di Header dan Hero Section
+    window.onload = function() {
+        typeEffect("header-typing", "M.Aji Sukma", 100, "cursor");
+        setTimeout(() => typeEffect("hero-typing", "Saya seorang pengembang web yang menyukai desain modern, animasi interaktif, dan tampilan minimalis.", 30, "cursor-hero"), 1500);
+    };
 
     // Sidebar Animasi & Overlay
     const menuBtn = document.getElementById("menu-btn");
@@ -351,22 +347,6 @@ window.onload = function() {
     closeBtn.addEventListener("click", closeSidebar);
     menuItems.forEach(item => item.addEventListener("click", closeSidebar));
         
-    // Tombol Scroll Ke Atas
-    const scrollTopBtn = document.getElementById("scroll-top-btn");
-
-    // Tampilkan tombol saat scroll ke bawah
-    window.addEventListener("scroll", () => {
-        if (window.scrollY > 300) {
-            scrollTopBtn.classList.remove("opacity-0");
-        } else {
-            scrollTopBtn.classList.add("opacity-0");
-        }
-    });
-
-    // Scroll ke atas saat tombol diklik
-    scrollTopBtn.addEventListener("click", () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    });
 
     </script>
 
