@@ -23,6 +23,11 @@
         #result {
             margin-top: 20px;
         }
+        #thumbnail {
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+        }
         a {
             color: #007BFF;
             text-decoration: none;
@@ -30,27 +35,82 @@
         a:hover {
             text-decoration: underline;
         }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>YouTube Downloader</h1>
         <input type="text" id="url" placeholder="Masukkan URL YouTube">
-        <select id="format">
-            <option value="video">Video</option>
-            <option value="audio">Audio</option>
-        </select>
-        <select id="quality">
-            <option value="360">360p</option>
-            <option value="480">480p</option>
-            <option value="720">720p</option>
-            <option value="1080">1080p</option>
-        </select>
-        <button onclick="download()">Download</button>
+        <button onclick="getVideoInfo()">Cari Video</button>
+
+        <!-- Detail Video -->
+        <div id="videoDetails" class="hidden">
+            <img id="thumbnail" src="" alt="Thumbnail">
+            <h2 id="videoTitle"></h2>
+            <select id="format">
+                <option value="video">Video</option>
+                <option value="audio">Audio</option>
+            </select>
+            <select id="quality">
+                <!-- Opsi kualitas akan diisi oleh JavaScript -->
+            </select>
+            <button onclick="download()">Download</button>
+        </div>
+
+        <!-- Hasil Download -->
         <div id="result"></div>
     </div>
 
     <script>
+        async function getVideoInfo() {
+            const url = document.getElementById('url').value;
+            const videoDetails = document.getElementById('videoDetails');
+            const resultDiv = document.getElementById('result');
+            const thumbnail = document.getElementById('thumbnail');
+            const videoTitle = document.getElementById('videoTitle');
+            const qualitySelect = document.getElementById('quality');
+
+            if (!url) {
+                alert("Masukkan URL YouTube!");
+                return;
+            }
+
+            resultDiv.innerHTML = "Memproses...";
+            videoDetails.classList.add('hidden');
+
+            try {
+                // Menggunakan API pihak ketiga untuk mendapatkan info video
+                const apiUrl = `https://noembed.com/embed?url=${encodeURIComponent(url)}`;
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                if (data.thumbnail_url && data.title) {
+                    // Tampilkan thumbnail dan judul video
+                    thumbnail.src = data.thumbnail_url;
+                    videoTitle.textContent = data.title;
+
+                    // Tampilkan pilihan kualitas
+                    qualitySelect.innerHTML = `
+                        <option value="360">360p</option>
+                        <option value="480">480p</option>
+                        <option value="720">720p</option>
+                        <option value="1080">1080p</option>
+                    `;
+
+                    // Tampilkan detail video
+                    videoDetails.classList.remove('hidden');
+                    resultDiv.innerHTML = "";
+                } else {
+                    resultDiv.innerHTML = "Gagal mendapatkan info video.";
+                }
+            } catch (error) {
+                resultDiv.innerHTML = "Terjadi kesalahan: " + error.message;
+            }
+        }
+
         async function download() {
             const url = document.getElementById('url').value;
             const format = document.getElementById('format').value;
@@ -62,10 +122,10 @@
                 return;
             }
 
-            resultDiv.innerHTML = "Memproses...";
+            resultDiv.innerHTML = "Mempersiapkan download...";
 
             try {
-                // Menggunakan API pihak ketiga (contoh: yt5s.com)
+                // Menggunakan API pihak ketiga untuk mendapatkan link download
                 const apiUrl = `https://yt5s.com/api/ajaxSearch`;
                 const formData = new FormData();
                 formData.append('q', url);
