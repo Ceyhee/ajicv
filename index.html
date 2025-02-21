@@ -7,33 +7,57 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+            color: #333;
         }
         .container {
             max-width: 600px;
             margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
             text-align: center;
+            color: #007BFF;
         }
         input, select, button {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
             font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
-        #result {
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #videoDetails {
             margin-top: 20px;
         }
         #thumbnail {
             max-width: 100%;
             height: auto;
+            border-radius: 10px;
+        }
+        #videoInfo {
+            margin-top: 10px;
+        }
+        #videoInfo p {
+            margin: 5px 0;
+        }
+        #result {
             margin-top: 20px;
-        }
-        a {
-            color: #007BFF;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
+            text-align: center;
         }
         .hidden {
             display: none;
@@ -49,15 +73,15 @@
         <!-- Detail Video -->
         <div id="videoDetails" class="hidden">
             <img id="thumbnail" src="" alt="Thumbnail">
-            <h2 id="videoTitle"></h2>
-            <select id="format">
-                <option value="video">Video</option>
-                <option value="audio">Audio</option>
-            </select>
+            <div id="videoInfo">
+                <h2 id="videoTitle"></h2>
+                <p id="videoChannel"></p>
+                <p id="videoDuration"></p>
+            </div>
             <select id="quality">
                 <!-- Opsi kualitas akan diisi oleh JavaScript -->
             </select>
-            <button onclick="download()">Download</button>
+            <button onclick="download()">Download Video</button>
         </div>
 
         <!-- Hasil Download -->
@@ -71,6 +95,8 @@
             const resultDiv = document.getElementById('result');
             const thumbnail = document.getElementById('thumbnail');
             const videoTitle = document.getElementById('videoTitle');
+            const videoChannel = document.getElementById('videoChannel');
+            const videoDuration = document.getElementById('videoDuration');
             const qualitySelect = document.getElementById('quality');
 
             if (!url) {
@@ -91,14 +117,14 @@
                     // Tampilkan thumbnail dan judul video
                     thumbnail.src = data.thumbnail_url;
                     videoTitle.textContent = data.title;
+                    videoChannel.textContent = `Channel: ${data.author_name}`;
+                    videoDuration.textContent = `Durasi: ${data.duration}`;
 
-                    // Tampilkan pilihan kualitas
-                    qualitySelect.innerHTML = `
-                        <option value="360">360p</option>
-                        <option value="480">480p</option>
-                        <option value="720">720p</option>
-                        <option value="1080">1080p</option>
-                    `;
+                    // Dapatkan kualitas video yang tersedia
+                    const qualityOptions = await getAvailableQualities(url);
+                    qualitySelect.innerHTML = qualityOptions.map(quality => `
+                        <option value="${quality}">${quality}</option>
+                    `).join('');
 
                     // Tampilkan detail video
                     videoDetails.classList.remove('hidden');
@@ -111,9 +137,13 @@
             }
         }
 
+        async function getAvailableQualities(url) {
+            // Contoh kualitas yang tersedia (bisa disesuaikan dengan API yang digunakan)
+            return ["360p", "480p", "720p", "1080p"];
+        }
+
         async function download() {
             const url = document.getElementById('url').value;
-            const format = document.getElementById('format').value;
             const quality = document.getElementById('quality').value;
             const resultDiv = document.getElementById('result');
 
@@ -125,8 +155,8 @@
             resultDiv.innerHTML = "Mempersiapkan download...";
 
             try {
-                // Menggunakan API alternatif (contoh: yt-downloader.org)
-                const apiUrl = `https://yt-downloader.org/api/button/${format === 'video' ? 'videos' : 'mp3'}/${encodeURIComponent(url)}`;
+                // Menggunakan API alternatif (contoh: yt-dlp)
+                const apiUrl = `https://yt-dlp.org/api/download?url=${encodeURIComponent(url)}&quality=${quality}`;
                 const response = await fetch(apiUrl);
                 const data = await response.json();
 
