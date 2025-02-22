@@ -121,7 +121,7 @@
                 return;
             }
 
-            resultDiv.innerHTML = "Memproses...";
+            resultDiv.innerHTML = `<div class="loader"></div> Memproses...`;
             videoDetails.classList.add('hidden');
 
             try {
@@ -139,11 +139,13 @@
                     videoViews.textContent = `Views: ${data.view_count || 'Tidak tersedia'}`;
                     videoDescription.textContent = `Deskripsi: ${data.description || 'Tidak tersedia'}`;
 
-                    // Dapatkan kualitas video yang tersedia
-                    const qualityOptions = await getAvailableQualities(url);
-                    qualitySelect.innerHTML = qualityOptions.map(quality => `
-                        <option value="${quality.value}">${quality.label} (${quality.size})</option>
-                    `).join('');
+                    // Tampilkan pilihan kualitas (simulasi)
+                    qualitySelect.innerHTML = `
+                        <option value="360">360p</option>
+                        <option value="480">480p</option>
+                        <option value="720">720p</option>
+                        <option value="1080">1080p</option>
+                    `;
 
                     // Tampilkan detail video
                     videoDetails.classList.remove('hidden');
@@ -154,16 +156,6 @@
             } catch (error) {
                 resultDiv.innerHTML = "Terjadi kesalahan: " + error.message;
             }
-        }
-
-        async function getAvailableQualities(url) {
-            // Simulasi kualitas video yang tersedia (bisa disesuaikan dengan API yang digunakan)
-            return [
-                { value: "360p", label: "360p", size: "50MB" },
-                { value: "480p", label: "480p", size: "100MB" },
-                { value: "720p", label: "720p", size: "200MB" },
-                { value: "1080p", label: "1080p", size: "500MB" }
-            ];
         }
 
         async function download() {
@@ -179,14 +171,21 @@
             resultDiv.innerHTML = `<div class="loader"></div> Mempersiapkan download...`;
 
             try {
-                // Menggunakan backend sendiri untuk memproses download
-                const apiUrl = `https://backend-anda.com/download?url=${encodeURIComponent(url)}&quality=${quality}`;
-                const response = await fetch(apiUrl);
+                // Menggunakan API pihak ketiga untuk mendapatkan link download
+                const apiUrl = `https://yt5s.com/api/ajaxSearch`;
+                const formData = new FormData();
+                formData.append('q', url);
+                formData.append('vt', 'home'); // Format video
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    body: formData
+                });
                 const data = await response.json();
 
-                if (data.url) {
-                    // Redirect ke link download
-                    window.location.href = data.url;
+                if (data.links && data.links[quality]) {
+                    const downloadLink = data.links[quality].url;
+                    resultDiv.innerHTML = `<a href="${downloadLink}" download>Download Video</a>`;
                 } else {
                     resultDiv.innerHTML = "Gagal mendapatkan link download.";
                 }
