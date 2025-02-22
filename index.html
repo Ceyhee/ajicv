@@ -62,6 +62,19 @@
         .hidden {
             display: none;
         }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007BFF;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -77,6 +90,8 @@
                 <h2 id="videoTitle"></h2>
                 <p id="videoChannel"></p>
                 <p id="videoDuration"></p>
+                <p id="videoViews"></p>
+                <p id="videoDescription"></p>
             </div>
             <select id="quality">
                 <!-- Opsi kualitas akan diisi oleh JavaScript -->
@@ -97,6 +112,8 @@
             const videoTitle = document.getElementById('videoTitle');
             const videoChannel = document.getElementById('videoChannel');
             const videoDuration = document.getElementById('videoDuration');
+            const videoViews = document.getElementById('videoViews');
+            const videoDescription = document.getElementById('videoDescription');
             const qualitySelect = document.getElementById('quality');
 
             if (!url) {
@@ -114,16 +131,18 @@
                 const data = await response.json();
 
                 if (data.thumbnail_url && data.title) {
-                    // Tampilkan thumbnail dan judul video
+                    // Tampilkan thumbnail dan detail video
                     thumbnail.src = data.thumbnail_url;
                     videoTitle.textContent = data.title;
                     videoChannel.textContent = `Channel: ${data.author_name}`;
                     videoDuration.textContent = `Durasi: ${data.duration}`;
+                    videoViews.textContent = `Views: ${data.view_count || 'Tidak tersedia'}`;
+                    videoDescription.textContent = `Deskripsi: ${data.description || 'Tidak tersedia'}`;
 
                     // Dapatkan kualitas video yang tersedia
                     const qualityOptions = await getAvailableQualities(url);
                     qualitySelect.innerHTML = qualityOptions.map(quality => `
-                        <option value="${quality}">${quality}</option>
+                        <option value="${quality.value}">${quality.label} (${quality.size})</option>
                     `).join('');
 
                     // Tampilkan detail video
@@ -138,8 +157,13 @@
         }
 
         async function getAvailableQualities(url) {
-            // Contoh kualitas yang tersedia (bisa disesuaikan dengan API yang digunakan)
-            return ["360p", "480p", "720p", "1080p"];
+            // Simulasi kualitas video yang tersedia (bisa disesuaikan dengan API yang digunakan)
+            return [
+                { value: "360p", label: "360p", size: "50MB" },
+                { value: "480p", label: "480p", size: "100MB" },
+                { value: "720p", label: "720p", size: "200MB" },
+                { value: "1080p", label: "1080p", size: "500MB" }
+            ];
         }
 
         async function download() {
@@ -152,11 +176,11 @@
                 return;
             }
 
-            resultDiv.innerHTML = "Mempersiapkan download...";
+            resultDiv.innerHTML = `<div class="loader"></div> Mempersiapkan download...`;
 
             try {
-                // Menggunakan API alternatif (contoh: yt-dlp)
-                const apiUrl = `https://yt-dlp.org/api/download?url=${encodeURIComponent(url)}&quality=${quality}`;
+                // Menggunakan backend sendiri untuk memproses download
+                const apiUrl = `https://backend-anda.com/download?url=${encodeURIComponent(url)}&quality=${quality}`;
                 const response = await fetch(apiUrl);
                 const data = await response.json();
 
