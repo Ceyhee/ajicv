@@ -3,195 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Downloader</title>
+    <title>Nonton YouTube Simple</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 20px;
-            background-color: #f4f4f9;
-            color: #333;
+            padding: 0;
+            background-color: #f0f0f0;
         }
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
-            background: #fff;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         h1 {
             text-align: center;
-            color: #007BFF;
         }
-        input, select, button {
+        #video-url {
             width: 100%;
             padding: 10px;
-            margin: 10px 0;
+            margin-bottom: 20px;
             font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
         }
-        button {
-            background-color: #007BFF;
-            color: white;
+        #video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+        }
+        #video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        #videoDetails {
-            margin-top: 20px;
-        }
-        #thumbnail {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-        }
-        #videoInfo {
-            margin-top: 10px;
-        }
-        #videoInfo p {
-            margin: 5px 0;
-        }
-        #result {
-            margin-top: 20px;
-            text-align: center;
-        }
-        .hidden {
-            display: none;
-        }
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #007BFF;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>YouTube Downloader</h1>
-        <input type="text" id="url" placeholder="Masukkan URL YouTube">
-        <button onclick="getVideoInfo()">Cari Video</button>
-
-        <!-- Detail Video -->
-        <div id="videoDetails" class="hidden">
-            <img id="thumbnail" src="" alt="Thumbnail">
-            <div id="videoInfo">
-                <h2 id="videoTitle"></h2>
-                <p id="videoChannel"></p>
-                <p id="videoDuration"></p>
-                <p id="videoViews"></p>
-                <p id="videoDescription"></p>
-            </div>
-            <select id="quality">
-                <!-- Opsi kualitas akan diisi oleh JavaScript -->
-            </select>
-            <button onclick="download()">Download Video</button>
+        <h1>Nonton YouTube Simple</h1>
+        <input type="text" id="video-url" placeholder="Tempelkan link YouTube di sini...">
+        <div id="video-container">
+            <!-- Video akan muncul di sini -->
         </div>
-
-        <!-- Hasil Download -->
-        <div id="result"></div>
     </div>
 
     <script>
-        async function getVideoInfo() {
-            const url = document.getElementById('url').value;
-            const videoDetails = document.getElementById('videoDetails');
-            const resultDiv = document.getElementById('result');
-            const thumbnail = document.getElementById('thumbnail');
-            const videoTitle = document.getElementById('videoTitle');
-            const videoChannel = document.getElementById('videoChannel');
-            const videoDuration = document.getElementById('videoDuration');
-            const videoViews = document.getElementById('videoViews');
-            const videoDescription = document.getElementById('videoDescription');
-            const qualitySelect = document.getElementById('quality');
-
-            if (!url) {
-                alert("Masukkan URL YouTube!");
-                return;
+        document.getElementById('video-url').addEventListener('input', function() {
+            const videoUrl = this.value;
+            const videoId = extractVideoId(videoUrl);
+            if (videoId) {
+                const embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`;
+                const iframe = `<iframe src="${embedUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+                document.getElementById('video-container').innerHTML = iframe;
             }
+        });
 
-            resultDiv.innerHTML = `<div class="loader"></div> Memproses...`;
-            videoDetails.classList.add('hidden');
-
-            try {
-                // Menggunakan API noembed untuk mendapatkan info video
-                const apiUrl = `https://noembed.com/embed?url=${encodeURIComponent(url)}`;
-                const response = await fetch(apiUrl);
-                const data = await response.json();
-
-                if (data.thumbnail_url && data.title) {
-                    // Tampilkan thumbnail dan detail video
-                    thumbnail.src = data.thumbnail_url;
-                    videoTitle.textContent = data.title;
-                    videoChannel.textContent = `Channel: ${data.author_name}`;
-                    videoDuration.textContent = `Durasi: ${data.duration}`;
-                    videoViews.textContent = `Views: ${data.view_count || 'Tidak tersedia'}`;
-                    videoDescription.textContent = `Deskripsi: ${data.description || 'Tidak tersedia'}`;
-
-                    // Tampilkan pilihan kualitas (simulasi)
-                    qualitySelect.innerHTML = `
-                        <option value="360">360p</option>
-                        <option value="480">480p</option>
-                        <option value="720">720p</option>
-                        <option value="1080">1080p</option>
-                    `;
-
-                    // Tampilkan detail video
-                    videoDetails.classList.remove('hidden');
-                    resultDiv.innerHTML = "";
-                } else {
-                    resultDiv.innerHTML = "Gagal mendapatkan info video.";
-                }
-            } catch (error) {
-                resultDiv.innerHTML = "Terjadi kesalahan: " + error.message;
-            }
-        }
-
-        async function download() {
-            const url = document.getElementById('url').value;
-            const quality = document.getElementById('quality').value;
-            const resultDiv = document.getElementById('result');
-
-            if (!url) {
-                alert("Masukkan URL YouTube!");
-                return;
-            }
-
-            resultDiv.innerHTML = `<div class="loader"></div> Mempersiapkan download...`;
-
-            try {
-                // Menggunakan API pihak ketiga untuk mendapatkan link download
-                const apiUrl = `https://yt5s.com/api/ajaxSearch`;
-                const formData = new FormData();
-                formData.append('q', url);
-                formData.append('vt', 'home'); // Format video
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await response.json();
-
-                if (data.links && data.links[quality]) {
-                    const downloadLink = data.links[quality].url;
-                    resultDiv.innerHTML = `<a href="${downloadLink}" download>Download Video</a>`;
-                } else {
-                    resultDiv.innerHTML = "Gagal mendapatkan link download.";
-                }
-            } catch (error) {
-                resultDiv.innerHTML = "Terjadi kesalahan: " + error.message;
-            }
+        function extractVideoId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
         }
     </script>
 </body>
