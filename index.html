@@ -142,6 +142,13 @@
 
         // Event listener untuk tombol Cari
         document.getElementById('search-button').addEventListener('click', loadVideo);
+
+        // Event listener untuk menekan Enter di input
+        document.getElementById('video-url').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                loadVideo();
+            }
+        });
     </script>
 </body>
 </html>
