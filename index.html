@@ -3,159 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Minimalis</title>
+    <title>AI Chatbot</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .grid-view div { width: 100%; }
-        .list-view div { width: 100%; display: flex; align-items: center; }
-        .list-view img { width: 120px; height: auto; margin-right: 10px; }
+        body {
+            background: url('https://source.unsplash.com/1600x900/?technology,ai') no-repeat center center fixed;
+            background-size: cover;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 20px;
+        }
     </style>
 </head>
-<body class="bg-gray-900 text-white flex flex-col items-center p-6">
-    <h1 class="text-2xl font-bold mb-4">YouTube Minimalis</h1>
-
-    <!-- Input Pencarian -->
-    <div class="w-full max-w-lg mb-4 flex items-center">
-        <input type="text" id="searchQuery" placeholder="Cari video atau channel..." 
-               class="w-full p-2 rounded text-black" oninput="searchVideo()">
-        <button onclick="toggleView()" class="ml-2 bg-gray-700 p-2 rounded">🖥️</button>
+<body class="flex items-center justify-center min-h-screen text-white">
+    <div class="glass max-w-lg w-full p-6 text-center">
+        <h1 class="text-3xl font-bold mb-4">🚀 AI Chatbot</h1>
+        <p class="mb-4">Bicara dengan AI dan dapatkan jawaban instan.</p>
+        <button onclick="startChat()" class="bg-blue-500 hover:bg-blue-700 px-4 py-2 rounded text-white">Mulai Chat</button>
     </div>
-
-    <!-- Tombol Kembali -->
-    <button id="backButton" onclick="goBack()" class="hidden bg-red-600 text-white px-4 py-2 rounded mb-2">🔙 Kembali</button>
-
-    <!-- Video Player -->
-    <div id="videoContainer" class="w-full max-w-4xl hidden mt-6">
-        <iframe id="youtubePlayer" class="w-full aspect-video" frameborder="0" allowfullscreen></iframe>
-        <h2 id="videoTitle" class="text-xl font-semibold mt-2"></h2>
-        <p id="channelName" class="text-blue-400 cursor-pointer" onclick="searchChannelVideos()" hidden></p>
-        <p id="videoDetails" class="text-gray-400 text-sm"></p>
-    </div>
-
-    <!-- Filter Channel -->
-    <div id="channelFilter" class="hidden flex gap-2 mt-4">
-        <button onclick="loadChannelVideos('date')" class="bg-gray-700 px-3 py-1 rounded">Terbaru</button>
-        <button onclick="loadChannelVideos('rating')" class="bg-gray-700 px-3 py-1 rounded">Terpopuler</button>
-        <button onclick="loadChannelVideos('viewCount')" class="bg-gray-700 px-3 py-1 rounded">Terlama</button>
-    </div>
-
-    <!-- Hasil Pencarian -->
-    <div id="results" class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 grid-view"></div>
 
     <script>
-        const apiKey = "AIzaSyCZWne2Jcfn0XFDhW3fi_0s6CovZ_Lf9xY"; // Ganti dengan API Key Anda
-        let currentChannelId = "";
-        let nextPageToken = "";
-        let viewMode = "grid";
-
-        function toggleView() {
-            const resultsDiv = document.getElementById("results");
-            viewMode = viewMode === "grid" ? "list" : "grid";
-            resultsDiv.classList.toggle("grid-view", viewMode === "grid");
-            resultsDiv.classList.toggle("list-view", viewMode === "list");
-        }
-
-        async function searchVideo() {
-            const query = document.getElementById("searchQuery").value;
-            if (!query) return;
-
-            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video,channel&maxResults=10&key=${apiKey}`;
-            
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-
-                document.getElementById("results").innerHTML = "";
-                document.getElementById("channelFilter").classList.add("hidden");
-                document.getElementById("backButton").classList.remove("hidden");
-
-                data.items.forEach(item => {
-                    if (item.id.kind === "youtube#video") {
-                        displayVideoResult(item);
-                    } else if (item.id.kind === "youtube#channel") {
-                        displayChannelResult(item);
-                    }
-                });
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        }
-
-        function displayVideoResult(video) {
-            const videoId = video.id.videoId;
-            const title = video.snippet.title;
-            const thumbnail = video.snippet.thumbnails.medium.url;
-            const channelId = video.snippet.channelId;
-            const channelTitle = video.snippet.channelTitle;
-
-            document.getElementById("results").innerHTML += `
-                <div class="bg-gray-800 p-2 rounded cursor-pointer" onclick="playVideo('${videoId}', '${title}', '${channelTitle}', '${channelId}')">
-                    <img src="${thumbnail}" class="w-full rounded">
-                    <p class="mt-2 text-sm">${title}</p>
-                    <p class="text-blue-400 text-xs">${channelTitle}</p>
-                </div>
-            `;
-        }
-
-        function displayChannelResult(channel) {
-            const channelId = channel.id.channelId;
-            const title = channel.snippet.title;
-            const thumbnail = channel.snippet.thumbnails.medium.url;
-
-            document.getElementById("results").innerHTML += `
-                <div class="bg-gray-800 p-2 rounded cursor-pointer flex items-center" onclick="searchChannelVideos('${channelId}', '${title}')">
-                    <img src="${thumbnail}" class="w-14 h-14 rounded-full">
-                    <p class="ml-3 text-sm">${title}</p>
-                </div>
-            `;
-        }
-
-        async function playVideo(videoId, title, channelTitle, channelId) {
-            document.getElementById("youtubePlayer").src = `https://www.youtube.com/embed/${videoId}`;
-            document.getElementById("videoTitle").innerText = title;
-            document.getElementById("channelName").innerText = channelTitle;
-            document.getElementById("videoContainer").classList.remove("hidden");
-        }
-
-        async function searchChannelVideos(channelId, channelTitle) {
-            currentChannelId = channelId;
-            nextPageToken = "";
-            document.getElementById("results").innerHTML = "";
-            document.getElementById("channelFilter").classList.remove("hidden");
-            document.getElementById("backButton").classList.remove("hidden");
-            loadChannelVideos('date');
-
-            window.addEventListener("scroll", infiniteScroll);
-        }
-
-        async function loadChannelVideos(order) {
-            if (!currentChannelId) return;
-
-            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${currentChannelId}&maxResults=10&type=video&order=${order}&pageToken=${nextPageToken}&key=${apiKey}`;
-            
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                nextPageToken = data.nextPageToken || "";
-
-                data.items.forEach(displayVideoResult);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        }
-
-        function infiniteScroll() {
-            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
-                loadChannelVideos('date');
-            }
-        }
-
-        function goBack() {
-            document.getElementById("results").innerHTML = "";
-            document.getElementById("videoContainer").classList.add("hidden");
-            document.getElementById("channelFilter").classList.add("hidden");
-            document.getElementById("backButton").classList.add("hidden");
-            window.removeEventListener("scroll", infiniteScroll);
+        function startChat() {
+            window.open('https://chat.openai.com/', '_blank'); // Ganti dengan API chatbot jika ada
         }
     </script>
 </body>
