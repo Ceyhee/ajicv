@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chatbot</title>
+    <title>QR Code Generator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
-            background: url('https://source.unsplash.com/1600x900/?technology,ai') no-repeat center center fixed;
+            background: url('https://source.unsplash.com/1600x900/?technology') no-repeat center center fixed;
             background-size: cover;
         }
         .glass {
@@ -20,14 +20,26 @@
 </head>
 <body class="flex items-center justify-center min-h-screen text-white">
     <div class="glass max-w-lg w-full p-6 text-center">
-        <h1 class="text-3xl font-bold mb-4">🚀 AI Chatbot</h1>
-        <p class="mb-4">Bicara dengan AI dan dapatkan jawaban instan.</p>
-        <button onclick="startChat()" class="bg-blue-500 hover:bg-blue-700 px-4 py-2 rounded text-white">Mulai Chat</button>
+        <h1 class="text-3xl font-bold mb-4">🎉 QR Code Generator</h1>
+        <p class="mb-4">Masukkan teks atau URL untuk membuat QR Code.</p>
+        <input type="text" id="qrInput" placeholder="Masukkan teks/URL..." 
+               class="w-full p-2 rounded text-black mb-4">
+        <button onclick="generateQR()" class="bg-blue-500 hover:bg-blue-700 px-4 py-2 rounded text-white">Buat QR Code</button>
+        <div id="qrResult" class="mt-4 hidden">
+            <img id="qrImage" class="mx-auto mt-4">
+            <a id="downloadQR" class="bg-green-500 hover:bg-green-700 px-4 py-2 rounded text-white mt-4 inline-block" download="qrcode.png">Download</a>
+        </div>
     </div>
 
     <script>
-        function startChat() {
-            window.open('https://chat.openai.com/', '_blank'); // Ganti dengan API chatbot jika ada
+        function generateQR() {
+            const input = document.getElementById("qrInput").value;
+            if (!input) return alert("Masukkan teks atau URL!");
+            const qrURL = `https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=${encodeURIComponent(input)}&choe=UTF-8`;
+
+            document.getElementById("qrImage").src = qrURL;
+            document.getElementById("downloadQR").href = qrURL;
+            document.getElementById("qrResult").classList.remove("hidden");
         }
     </script>
 </body>
